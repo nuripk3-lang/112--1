@@ -1,0 +1,1538 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+  <meta charset="UTF-8">
+  <title>112 Müdahale Algoritmaları</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="description" content="Hastane öncesi acil müdahale algoritmaları — hızlı referans, dozlar ve uyarılar.">
+  <meta name="theme-color" content="#b91c1c">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="112 Asistan">
+  <!-- Favicon (PNG for better compatibility) -->
+  <link rel="icon" type="image/png" sizes="16x16" href="img/logo.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="img/logo.png">
+  <link rel="icon" type="image/png" sizes="48x48" href="img/logo.png">
+  <link rel="shortcut icon" href="img/logo.png">
+  
+  <!-- Apple Touch Icons (PNG for iOS compatibility) -->
+  <link rel="apple-touch-icon" href="img/logo.png?v=5">
+  <link rel="apple-touch-icon" sizes="57x57" href="img/logo.png?v=5">
+  <link rel="apple-touch-icon" sizes="60x60" href="img/logo.png?v=5">
+  <link rel="apple-touch-icon" sizes="72x72" href="img/logo.png?v=5">
+  <link rel="apple-touch-icon" sizes="76x76" href="img/logo.png?v=5">
+  <link rel="apple-touch-icon" sizes="114x114" href="img/logo.png?v=5">
+  <link rel="apple-touch-icon" sizes="120x120" href="img/logo.png?v=5">
+  <link rel="apple-touch-icon" sizes="144x144" href="img/logo.png?v=5">
+  <link rel="apple-touch-icon" sizes="152x152" href="img/logo.png?v=5">
+  <link rel="apple-touch-icon" sizes="180x180" href="img/logo.png?v=5">
+  
+  <!-- Microsoft Tiles -->
+  <meta name="msapplication-TileImage" content="img/icons/pwa/icon-144x144.jpg">
+  <meta name="msapplication-TileColor" content="#b91c1c">
+  <meta name="msapplication-config" content="browserconfig.xml">
+  <link rel="manifest" href="manifest.json">
+  <link rel="stylesheet" href="style.css?v=gradient-effects-v1">
+  <style>
+    /* Modern Nokta Animasyonu */
+    .loader-dots { display: flex; justify-content: center; gap: 8px; }
+    .loader-dots span { width: 12px; height: 12px; background: #b91c1c; border-radius: 50%; animation: dots 1.4s infinite ease-in-out both; }
+    .loader-dots span:nth-child(1) { animation-delay: -0.32s; }
+    .loader-dots span:nth-child(2) { animation-delay: -0.16s; }
+
+    @keyframes dots {
+        0%, 80%, 100% { transform: scale(0); }
+        40% { transform: scale(1.0); }
+    }
+  </style>
+</head>
+<body>
+<div id="splash-screen" onclick="closeSplashScreen()" style="position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #ffffff; display: flex; flex-direction: column; align-items: center; justify-content: center; z-index: 9999; transition: all 0.8s cubic-bezier(0.4, 0, 0.2, 1); overflow: hidden; cursor: pointer;" title="Tıklayarak geç">
+    
+    <div style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; background-image: url('https://www.transparenttextures.com/patterns/pinstriped-suit.png'); opacity: 0.05;"></div>
+
+    <div style="position: relative; z-index: 10; text-align: center;">
+        <div style="width: 160px; height: 160px; margin: 0 auto 25px auto; background: white; border-radius: 50%; display: flex; align-items: center; justify-content: center; box-shadow: 0 15px 35px rgba(185, 28, 28, 0.15); border: 2px solid #f8fafc; overflow: hidden;">
+            <img src="img/logo.jpg" 
+                 style="width: 130px; height: auto;" 
+                 alt="T.C. Sağlık Bakanlığı">
+        </div>
+
+        <h1 style="color: #b91c1c; font-family: 'Segoe UI', system-ui, -apple-system, sans-serif; font-weight: 900; letter-spacing: 4px; margin: 0; font-size: 32px; text-shadow: 0 2px 4px rgba(0,0,0,0.05);">KIRKLARELİ 112</h1>
+        <div style="width: 60px; height: 4px; background: #b91c1c; margin: 15px auto; border-radius: 2px;"></div>
+        <p style="color: #64748b; font-family: sans-serif; font-weight: 700; font-size: 13px; text-transform: uppercase; letter-spacing: 2px;">Acil Sağlık Eğitim Asistanı</p>
+
+        <div style="margin-top: 50px;">
+            <div class="loader-dots">
+                <span></span><span></span><span></span>
+            </div>
+        </div>
+    </div>
+    
+    <div style="position: absolute; bottom: 40px; color: #94a3b8; font-size: 11px; font-family: sans-serif; letter-spacing: 1px; font-weight: 600;">
+        T.C. SAĞLIK BAKANLIĞI KURUMSAL REHBERİ
+    </div>
+    
+    <div style="position: absolute; bottom: 20px; color: #94a3b8; font-size: 12px; font-family: sans-serif;">
+        © 2026 Hastane Öncesi Bakım Kılavuzu
+    </div>
+</div>
+
+<!-- Hero Section - Profesyonel & Modern -->
+<div style="position: relative; margin: -16px -16px 30px -16px; padding: 50px 20px 35px; background: linear-gradient(135deg, #1e293b 0%, #334155 100%); overflow: hidden;">
+  
+  <!-- Subtle Pattern Overlay -->
+  <div style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; background-image: radial-gradient(circle at 2px 2px, rgba(255,255,255,0.05) 1px, transparent 0); background-size: 40px 40px; opacity: 0.3;"></div>
+  
+  <!-- Ambulans Işığı Efekti - Daha Subtle -->
+  <div style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none;">
+    <!-- Sol kırmızı ışık - daha hafif -->
+    <div style="position: absolute; top: 15px; left: 15px; width: 80px; height: 80px; background: radial-gradient(circle, rgba(220, 38, 38, 0.3) 0%, transparent 70%); border-radius: 50%; animation: emergencyLightLeft 2s ease-in-out infinite;"></div>
+    <!-- Sağ mavi ışık - daha hafif -->
+    <div style="position: absolute; top: 15px; right: 15px; width: 80px; height: 80px; background: radial-gradient(circle, rgba(59, 130, 246, 0.3) 0%, transparent 70%); border-radius: 50%; animation: emergencyLightRight 2s ease-in-out infinite;"></div>
+  </div>
+  
+  <!-- Accent Line - Kırmızı vurgu -->
+  <div style="position: absolute; bottom: 0; left: 0; width: 100%; height: 4px; background: linear-gradient(90deg, #dc2626 0%, #ef4444 50%, #dc2626 100%); animation: accentPulse 3s ease-in-out infinite;"></div>
+  
+  <!-- Content -->
+  <div style="position: relative; z-index: 10; text-align: center; color: white;">
+    
+    <!-- Logo Badge - Daha Kompakt -->
+    <div style="display: inline-flex; align-items: center; gap: 10px; background: rgba(255,255,255,0.1); backdrop-filter: blur(10px); padding: 10px 20px; border-radius: 50px; margin-bottom: 20px; border: 1px solid rgba(255,255,255,0.2);">
+      <div style="width: 36px; height: 36px; background: linear-gradient(135deg, #dc2626, #b91c1c); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 20px; box-shadow: 0 4px 12px rgba(220, 38, 38, 0.4);">🚑</div>
+      <div style="text-align: left; line-height: 1.2;">
+        <div style="font-size: 13px; font-weight: 800; letter-spacing: 1px;">112 ACİL</div>
+        <div style="font-size: 9px; opacity: 0.8; font-weight: 600;">KIRKLARELI</div>
+      </div>
+    </div>
+    
+    <!-- Main Title - Daha Okunabilir -->
+    <h1 style="font-size: 38px; font-weight: 800; margin: 0 0 12px 0; letter-spacing: -0.5px; line-height: 1.2;">
+      Acil Müdahale Asistanı
+    </h1>
+    
+    <!-- Subtitle -->
+    <p style="font-size: 12px; opacity: 0.75; margin: 0 0 25px 0; font-weight: 400; max-width: 400px; margin-left: auto; margin-right: auto; line-height: 1.6; font-style: italic; border: 1px solid rgba(255,255,255,0.2); border-radius: 10px; padding: 10px 14px; background: rgba(255,255,255,0.05);">
+      ⚕️ Sağlık profesyonelleri içindir. Tıbbi bilgilendirme ve eğitim amaçlıdır. Güncel ve geçerli bilgiler için Sağlık Bakanlığı'na ait algoritmalar ile değerlendirilmelidir.
+    </p>
+    
+    <!-- Stats Cards - Daha Minimal -->
+    <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; max-width: 450px; margin: 0 auto 20px;">
+      <div style="background: rgba(255,255,255,0.08); backdrop-filter: blur(10px); padding: 16px 8px; border-radius: 12px; border: 1px solid rgba(255,255,255,0.1); transition: all 0.3s ease;" onmouseover="this.style.background='rgba(255,255,255,0.12)'" onmouseout="this.style.background='rgba(255,255,255,0.08)'">
+        <div style="font-size: 32px; font-weight: 900; margin-bottom: 4px;">80+</div>
+        <div style="font-size: 10px; opacity: 0.8; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px;">Algoritma</div>
+      </div>
+      <div style="background: rgba(255,255,255,0.08); backdrop-filter: blur(10px); padding: 16px 8px; border-radius: 12px; border: 1px solid rgba(255,255,255,0.1); transition: all 0.3s ease;" onmouseover="this.style.background='rgba(255,255,255,0.12)'" onmouseout="this.style.background='rgba(255,255,255,0.08)'">
+        <div style="font-size: 32px; font-weight: 900; margin-bottom: 4px;">300+</div>
+        <div style="font-size: 10px; opacity: 0.8; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px;">Quiz</div>
+      </div>
+      <div style="background: rgba(255,255,255,0.08); backdrop-filter: blur(10px); padding: 16px 8px; border-radius: 12px; border: 1px solid rgba(255,255,255,0.1); transition: all 0.3s ease;" onmouseover="this.style.background='rgba(255,255,255,0.12)'" onmouseout="this.style.background='rgba(255,255,255,0.08)'">
+        <div style="font-size: 32px; font-weight: 900; margin-bottom: 4px;">💯</div>
+        <div style="font-size: 10px; opacity: 0.8; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px;">Offline</div>
+      </div>
+    </div>
+    
+    <!-- Quick Action Button - Daha Subtle -->
+    <button onclick="document.getElementById('searchInput').focus()" style="background: rgba(255,255,255,0.15); backdrop-filter: blur(10px); color: white; padding: 12px 28px; border-radius: 50px; border: 1px solid rgba(255,255,255,0.2); font-size: 14px; font-weight: 600; box-shadow: 0 4px 12px rgba(0,0,0,0.1); cursor: pointer; transition: all 0.3s ease;" onmouseover="this.style.background='rgba(255,255,255,0.25)'; this.style.transform='translateY(-2px)'" onmouseout="this.style.background='rgba(255,255,255,0.15)'; this.style.transform='translateY(0)'">
+      🔍 Hızlı Arama
+    </button>
+    
+  </div>
+  
+  <!-- Theme Toggle - Floating -->
+  <button class="theme-toggle" id="themeToggle" onclick="toggleTheme()" aria-label="Tema Değiştir" title="Karanlık/Açık Tema" style="position: absolute; top: 15px; right: 15px; background: rgba(255,255,255,0.1); backdrop-filter: blur(10px); border: 1px solid rgba(255,255,255,0.2); width: 44px; height: 44px;">
+    🌙
+  </button>
+  
+  <!-- Voice Command Button - Floating -->
+  <button id="voiceBtn" onclick="toggleVoiceCommand()" aria-label="Sesli Komut" title="Sesli Komut (Mikrofon)" style="position: absolute; top: 15px; right: 70px; background: rgba(220, 38, 38, 0.15); backdrop-filter: blur(10px); border: 1px solid rgba(220, 38, 38, 0.3); width: 44px; height: 44px; color: white; font-size: 20px; border-radius: 50%; cursor: pointer; transition: all 0.3s ease;">
+    🎤
+  </button>
+  
+  <!-- Location Button - Floating -->
+  <button id="locationBtn" onclick="getLocation()" aria-label="Konum Bul" title="Konumumu Bul (GPS)" style="position: absolute; top: 15px; right: 125px; background: rgba(16, 185, 129, 0.15); backdrop-filter: blur(10px); border: 1px solid rgba(16, 185, 129, 0.3); width: 44px; height: 44px; color: white; font-size: 20px; border-radius: 50%; cursor: pointer; transition: all 0.3s ease;">
+    📍
+  </button>
+  
+  <!-- Translation Button - Floating -->
+  <button id="translateBtn" onclick="openTranslator()" aria-label="Çeviri" title="Acil Durum Çevirisi" style="position: absolute; top: 15px; right: 180px; background: rgba(59, 130, 246, 0.15); backdrop-filter: blur(10px); border: 1px solid rgba(59, 130, 246, 0.3); width: 44px; height: 44px; color: white; font-size: 20px; border-radius: 50%; cursor: pointer; transition: all 0.3s ease;">
+    🌍
+  </button>
+  
+</div>
+
+<!-- Animasyonlar -->
+<style>
+@keyframes emergencyLightLeft {
+  0%, 100% { 
+    opacity: 0.3; 
+    transform: scale(1);
+  }
+  50% { 
+    opacity: 0.6; 
+    transform: scale(1.1);
+  }
+}
+
+@keyframes emergencyLightRight {
+  0%, 100% { 
+    opacity: 0.6; 
+    transform: scale(1.1);
+  }
+  50% { 
+    opacity: 0.3; 
+    transform: scale(1);
+  }
+}
+
+@keyframes accentPulse {
+  0%, 100% { 
+    opacity: 0.6;
+  }
+  50% { 
+    opacity: 1;
+  }
+}
+</style>
+
+<label for="searchInput" class="visually-hidden">Algoritma ara</label>
+<div style="position: relative; margin-bottom: 30px;">
+  <div style="position: absolute; left: 18px; top: 50%; transform: translateY(-50%); font-size: 20px; pointer-events: none;">🔍</div>
+  <input
+    type="text"
+    id="searchInput"
+    placeholder="Algoritma, ilaç veya prosedür ara..."
+    onkeyup="searchAlgo()"
+    oninput="searchAlgo()"
+    aria-label="Algoritma ara"
+    style="padding-left: 55px; font-size: 15px; height: 56px;"
+  />
+  <div style="position: absolute; right: 18px; top: 50%; transform: translateY(-50%); font-size: 11px; color: var(--muted); background: var(--input-bg); padding: 4px 8px; border-radius: 6px; border: 1px solid #e5e7eb;">
+    Ctrl+K
+  </div>
+</div>
+
+<!-- Favoriler Bölümü -->
+<div id="favoritesSection" style="display: none;">
+  <h2 style="margin: 0 0 10px 0; font-size: 1.2rem; color: var(--warning);">⭐ Favorilerim</h2>
+  <div id="favoritesGrid"></div>
+  <p id="noFavorites" style="text-align: center; color: var(--muted); display: none;">Henüz favori eklenmemiş. Algoritmalara ⭐ butonu ile ekleyebilirsiniz.</p>
+</div>
+
+<!-- Ana Menü - Yeni Tasarım -->
+<div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; margin-bottom: 30px;">
+  
+  <!-- Yetişkin -->
+  <div onclick="showGroup('yetiskin')" style="background: linear-gradient(135deg, #3b82f6, #2563eb); padding: 24px; border-radius: 20px; cursor: pointer; position: relative; overflow: hidden; box-shadow: 0 8px 24px rgba(59, 130, 246, 0.25); transition: all 0.3s ease;" onmouseover="this.style.transform='translateY(-4px) scale(1.02)'" onmouseout="this.style.transform='translateY(0) scale(1)'">
+    <div style="position: absolute; top: -20px; right: -20px; width: 100px; height: 100px; background: rgba(255,255,255,0.1); border-radius: 50%;"></div>
+    <div style="position: relative; z-index: 1; color: white;">
+      <div style="font-size: 40px; margin-bottom: 10px;">🧑</div>
+      <div style="font-size: 18px; font-weight: 700; margin-bottom: 5px;">Yetişkin</div>
+      <div style="font-size: 12px; opacity: 0.9;">22 Algoritma</div>
+    </div>
+  </div>
+  
+  <!-- Çocuk -->
+  <div onclick="showGroup('cocuk')" style="background: linear-gradient(135deg, #8b5cf6, #7c3aed); padding: 24px; border-radius: 20px; cursor: pointer; position: relative; overflow: hidden; box-shadow: 0 8px 24px rgba(139, 92, 246, 0.25); transition: all 0.3s ease;" onmouseover="this.style.transform='translateY(-4px) scale(1.02)'" onmouseout="this.style.transform='translateY(0) scale(1)'">
+    <div style="position: absolute; top: -20px; right: -20px; width: 100px; height: 100px; background: rgba(255,255,255,0.1); border-radius: 50%;"></div>
+    <div style="position: relative; z-index: 1; color: white;">
+      <div style="font-size: 40px; margin-bottom: 10px;">👶</div>
+      <div style="font-size: 18px; font-weight: 700; margin-bottom: 5px;">Çocuk</div>
+      <div style="font-size: 12px; opacity: 0.9;">20 Algoritma</div>
+    </div>
+  </div>
+  
+  <!-- Doz Hesaplama -->
+  <div onclick="showChildCalc()" style="background: linear-gradient(135deg, #10b981, #059669); padding: 24px; border-radius: 20px; cursor: pointer; position: relative; overflow: hidden; box-shadow: 0 8px 24px rgba(16, 185, 129, 0.25); transition: all 0.3s ease;" onmouseover="this.style.transform='translateY(-4px) scale(1.02)'" onmouseout="this.style.transform='translateY(0) scale(1)'">
+    <div style="position: absolute; top: -20px; right: -20px; width: 100px; height: 100px; background: rgba(255,255,255,0.1); border-radius: 50%;"></div>
+    <div style="position: relative; z-index: 1; color: white;">
+      <div style="font-size: 40px; margin-bottom: 10px;">💉</div>
+      <div style="font-size: 18px; font-weight: 700; margin-bottom: 5px;">Doz Hesaplama</div>
+      <div style="font-size: 12px; opacity: 0.9;">Çocuk İlaçları</div>
+    </div>
+  </div>
+  
+  <!-- İlaçlar -->
+  <div onclick="showGroup('ilaclar')" style="background: linear-gradient(135deg, #f59e0b, #d97706); padding: 24px; border-radius: 20px; cursor: pointer; position: relative; overflow: hidden; box-shadow: 0 8px 24px rgba(245, 158, 11, 0.25); transition: all 0.3s ease;" onmouseover="this.style.transform='translateY(-4px) scale(1.02)'" onmouseout="this.style.transform='translateY(0) scale(1)'">
+    <div style="position: absolute; top: -20px; right: -20px; width: 100px; height: 100px; background: rgba(255,255,255,0.1); border-radius: 50%;"></div>
+    <div style="position: relative; z-index: 1; color: white;">
+      <div style="font-size: 40px; margin-bottom: 10px;">💊</div>
+      <div style="font-size: 18px; font-weight: 700; margin-bottom: 5px;">İlaçlar</div>
+      <div style="font-size: 12px; opacity: 0.9;">Hazırlama Tablosu</div>
+    </div>
+  </div>
+  
+</div>
+
+<!-- İkinci Satır - Küçük Butonlar -->
+<div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; margin-bottom: 12px;">
+  
+  <!-- Uygulamalar -->
+  <button onclick="showProcedures()" style="background: linear-gradient(135deg, #64748b, #475569); padding: 18px; border-radius: 16px; color: white; display: flex; align-items: center; gap: 12px; justify-content: center; font-size: 15px; font-weight: 600;">
+    <span style="font-size: 24px;">⚙️</span>
+    <span>Uygulamalar</span>
+  </button>
+  
+  <!-- Quiz -->
+  <button onclick="showQuizGame()" style="background: linear-gradient(135deg, #ec4899, #db2777); padding: 18px; border-radius: 16px; color: white; display: flex; align-items: center; gap: 12px; justify-content: center; font-size: 15px; font-weight: 600; position: relative;">
+    <span style="font-size: 24px;">🎮</span>
+    <span>Quiz Oyunu</span>
+    <span style="position: absolute; top: 8px; right: 8px; background: rgba(255,255,255,0.3); padding: 2px 8px; border-radius: 10px; font-size: 10px;">300+</span>
+  </button>
+  
+</div>
+
+<!-- Üçüncü Satır - İlaç Tarayıcı -->
+<div style="margin-bottom: 30px;">
+  <button onclick="showIlacTarayici()" style="
+    width: 100%;
+    background: linear-gradient(135deg, #0f172a, #1e293b);
+    border: 1px solid rgba(56, 189, 248, 0.3);
+    padding: 18px 24px;
+    border-radius: 16px;
+    color: white;
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    font-size: 15px;
+    font-weight: 600;
+    position: relative;
+    overflow: hidden;
+    cursor: pointer;
+    box-shadow: 0 4px 16px rgba(0,0,0,0.2);
+  ">
+    <!-- Arka plan efekti -->
+    <div style="position:absolute;top:0;right:0;width:140px;height:100%;background:linear-gradient(135deg,transparent,rgba(56,189,248,0.08));pointer-events:none;"></div>
+    <!-- İkon -->
+    <div style="
+      width: 46px; height: 46px; flex-shrink: 0;
+      background: linear-gradient(135deg, #0284c7, #0369a1);
+      border-radius: 14px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 24px;
+      box-shadow: 0 4px 12px rgba(2,132,199,0.4);
+    ">🔬</div>
+    <!-- Metin -->
+    <div style="text-align:left; flex:1;">
+      <div style="font-size:16px;font-weight:800;color:white;margin-bottom:2px;">İlaç Tanıma</div>
+      <div style="font-size:11px;color:#7dd3fc;font-weight:500;">Kamera ile ilaç kutusunu tara</div>
+    </div>
+    <!-- Yeni etiketi -->
+    <span style="
+      background: linear-gradient(135deg,#0284c7,#0369a1);
+      padding: 4px 10px; border-radius: 10px;
+      font-size: 10px; font-weight: 700;
+      color: white; letter-spacing: 0.5px;
+      box-shadow: 0 2px 6px rgba(2,132,199,0.3);
+    ">YENİ</span>
+  </button>
+</div>
+
+<!-- YETİŞKİN -->
+<div id="yetiskin" class="section" style="display:none;">
+  <h2 id="yetiskinTitle">Yetişkin Ön Tanılar</h2>
+  
+  <div id="yetiskinCategoryMenu" class="grid">
+    <button onclick="filterYetiskin('cardiac', '🫀 Kardiyak Aciller')" style="background: #fee2e2; color: #b91c1c; border: 2px solid #ef4444; position: relative;">
+      🫀 Kardiyak
+      <span style="position: absolute; top: 8px; right: 8px; background: #dc2626; color: white; font-size: 11px; padding: 3px 8px; border-radius: 12px; font-weight: bold; box-shadow: 0 2px 4px rgba(0,0,0,0.2);">7</span>
+    </button>
+    <button onclick="filterYetiskin('respiratory', '🫁 Solunum Aciller')" style="background: #ecfdf5; color: #059669; border: 2px solid #10b981; position: relative;">
+      🫁 Solunum
+      <span style="position: absolute; top: 8px; right: 8px; background: #059669; color: white; font-size: 11px; padding: 3px 8px; border-radius: 12px; font-weight: bold; box-shadow: 0 2px 4px rgba(0,0,0,0.2);">2</span>
+    </button>
+    <button onclick="filterYetiskin('neuro', '🧠 Nörolojik Aciller')" style="background: #eef2ff; color: #4f46e5; border: 2px solid #6366f1; position: relative;">
+      🧠 Nörolojik
+      <span style="position: absolute; top: 8px; right: 8px; background: #4f46e5; color: white; font-size: 11px; padding: 3px 8px; border-radius: 12px; font-weight: bold; box-shadow: 0 2px 4px rgba(0,0,0,0.2);">4</span>
+    </button>
+    <button onclick="filterYetiskin('other', '🚑 Diğer Aciller')" style="background: #fffbeb; color: #d97706; border: 2px solid #f59e0b; position: relative;">
+      🚑 Diğer
+      <span style="position: absolute; top: 8px; right: 8px; background: #d97706; color: white; font-size: 11px; padding: 3px 8px; border-radius: 12px; font-weight: bold; box-shadow: 0 2px 4px rgba(0,0,0,0.2);">9</span>
+    </button>
+  </div>
+
+  <div id="yetiskinGrid" class="grid" style="display:none; margin-top: 20px;">
+    <button class="back-btn" style="grid-column: 1 / -1; background: #4b5563; margin-bottom:10px;" onclick="resetYetiskinView()">⬅️ Kategorilere Dön</button>
+    
+    <button data-key="aks" data-category="cardiac" data-tags="kalp,stemi,ekg,aspirin" onclick="showAlgo('aks','Yetişkin')">AKS</button>
+    <button data-key="bradikardi" data-category="cardiac" data-tags="yavas,nabiz,atropin" onclick="showAlgo('bradikardi','Yetişkin')">Bradikardi</button>
+    <button data-key="tasikardi" data-category="cardiac" data-tags="hizli,nabiz,adenozin" onclick="showAlgo('tasikardi','Yetişkin')">Taşikardi</button>
+    <button data-key="arrest" data-category="cardiac" data-tags="kpr,defib,adrenalin" onclick="showAlgo('arrest','Yetişkin')">Arrest</button>
+    <button data-key="kardiyojenik_sok_y" data-category="cardiac" data-tags="kalp,şok,erişkin,yetmezlik,mi" onclick="showAlgo('kardiyojenik_sok_y','Yetişkin')">🫀 Kardiyojenik Şok</button>
+    <button data-key="post_rosc_y" data-category="cardiac" data-tags="kpr,rosc,erişkin,kalp,arrest" onclick="showAlgo('post_rosc_y','Yetişkin')">🏥 Post-ROSC Bakım</button>
+    <button data-key="hipotermi_arrest" data-category="cardiac" data-tags="arrest,soğuk,hipotermi,erişkin" onclick="showAlgo('hipotermi_arrest','Yetişkin')">❄️ Hipotermik Arrest</button>
+
+    <button data-key="astim" data-category="respiratory" data-tags="nefes,bronkospazm,ventolin" onclick="showAlgo('astim','Yetişkin')">Astım</button>
+    <button data-key="koah" data-category="respiratory" data-tags="koah,nefes,hiperkapni" onclick="showAlgo('koah','Yetişkin')">KOAH</button>
+
+    <button data-key="inme" data-category="neuro" data-tags="felç,inme,fast,yüz" onclick="showAlgo('inme','Yetişkin')">İnme (SVH)</button>
+    <button data-key="nobet" data-category="neuro" data-tags="nöbet,konvülziyon,midazolam" onclick="showAlgo('nobet','Yetişkin')">Nöbet</button>
+    <button data-key="kafa" data-category="neuro" data-tags="kafa,gks,entübasyon" onclick="showAlgo('kafa','Yetişkin')">Kafa Travması</button>
+    <button data-key="vertigo" data-category="neuro" data-tags="başdönmesi,bulantı" onclick="showAlgo('vertigo','Yetişkin')">Vertigo</button>
+
+    <button data-key="gebe_hipertansiyon" data-category="other" data-tags="gebe,eklampsi,tansiyon" onclick="showAlgo('gebe_hipertansiyon','Yetişkin')">🤰 Gebe HT / Eklampsi</button>
+    <button data-key="dogum" data-category="other" data-tags="gebe,bebek,plasenta,kanama" onclick="showAlgo('dogum','Yetişkin')">Acil Doğum</button>
+    <button data-key="hipoglisemi" data-category="other" data-tags="şeker,diyabet,komo,kan şekeri" onclick="showAlgo('hipoglisemi','Yetişkin')">Hipoglisemi</button>
+    <button data-key="hipovolemi" data-category="other" data-tags="şok,sıvı,kanama" onclick="showAlgo('hipovolemi','Yetişkin')">Hipovolemik Şok</button>
+    <button data-key="yanik" data-category="other" data-tags="yanık,parkland,alan" onclick="showAlgo('yanik','Yetişkin')">Yanık</button>
+    <button data-key="zehir" data-category="other" data-tags="zehir,toksikoloji,antidot" onclick="showAlgo('zehir','Yetişkin')">Zehirlenme</button>
+    <button data-key="anafilaksi" data-category="other" data-tags="alerji,şok,epinefrin" onclick="showAlgo('anafilaksi','Yetişkin')">Anafilaksi</button>
+    <button data-key="travma" data-category="other" data-tags="travma,immobilizasyon,kanama" onclick="showAlgo('travma','Yetişkin')">Travmalı Hasta</button>
+    <button data-key="crush" data-category="other" data-tags="crush,myoglobin,hiperkalemi" onclick="showAlgo('crush','Yetişkin')">Crush Sendromu</button>
+</div>
+</div>
+
+<div id="cocuk" class="section" style="display:none;">
+    <h2 id="cocukTitle">Çocuk Ön Tanılar</h2>
+    
+    <div id="cocukCategoryMenu" class="grid">
+        <button onclick="filterCocuk('cardiac', '🫀 Çocuk Kardiyak')" style="background: #fee2e2; color: #b91c1c; border: 2px solid #ef4444; position: relative;">
+          🫀 Kardiyak
+          <span style="position: absolute; top: 8px; right: 8px; background: #dc2626; color: white; font-size: 11px; padding: 3px 8px; border-radius: 12px; font-weight: bold; box-shadow: 0 2px 4px rgba(0,0,0,0.2);">6</span>
+        </button>
+        <button onclick="filterCocuk('respiratory', '🫁 Çocuk Solunum')" style="background: #ecfdf5; color: #059669; border: 2px solid #10b981; position: relative;">
+          🫁 Solunum
+          <span style="position: absolute; top: 8px; right: 8px; background: #059669; color: white; font-size: 11px; padding: 3px 8px; border-radius: 12px; font-weight: bold; box-shadow: 0 2px 4px rgba(0,0,0,0.2);">3</span>
+        </button>
+        <button onclick="filterCocuk('neuro', '🧠 Çocuk Nöroloji')" style="background: #eef2ff; color: #4f46e5; border: 2px solid #6366f1; position: relative;">
+          🧠 Nörolojik
+          <span style="position: absolute; top: 8px; right: 8px; background: #4f46e5; color: white; font-size: 11px; padding: 3px 8px; border-radius: 12px; font-weight: bold; box-shadow: 0 2px 4px rgba(0,0,0,0.2);">3</span>
+        </button>
+        <button onclick="filterCocuk('other', '🚑 Çocuk Diğer')" style="background: #fffbeb; color: #d97706; border: 2px solid #f59e0b; position: relative;">
+          🚑 Diğer
+          <span style="position: absolute; top: 8px; right: 8px; background: #d97706; color: white; font-size: 11px; padding: 3px 8px; border-radius: 12px; font-weight: bold; box-shadow: 0 2px 4px rgba(0,0,0,0.2);">8</span>
+        </button>
+    </div>
+
+    <div id="cocukGrid" class="grid" style="display:none; margin-top: 20px;">
+        <button class="back-btn" style="grid-column: 1 / -1; background: #4b5563; margin-bottom:10px;" onclick="resetCocukView()">⬅️ Kategorilere Dön</button>
+        
+        <button data-key="arrest" data-category="cardiac" data-tags="kpr,çocuk,defib" onclick="showAlgo('arrest','Çocuk')">Arrest</button>
+        <button data-key="bradikardi" data-category="cardiac" data-tags="yavas,çocuk,atropin" onclick="showAlgo('bradikardi','Çocuk')">Bradikardi</button>
+        <button data-key="tasikardi" data-category="cardiac" data-tags="hızlı,çocuk,adenozin" onclick="showAlgo('tasikardi','Çocuk')">Taşikardi</button>
+        <button data-key="kardiyojenik_sok" data-category="cardiac" data-tags="kalp,şok,çocuk" onclick="showAlgo('kardiyojenik_sok','Çocuk')">🫀 Kardiyojenik Şok</button>
+        <button data-key="post_rosc_cocuk" data-category="cardiac" onclick="showAlgo('post_rosc_cocuk','Çocuk')">🔄 Post-ROSC Bakım</button>
+        <button data-key="nrp" data-category="cardiac" data-tags="yenidoğan,bebek,nrp" onclick="showAlgo('nrp','Çocuk')">NRP (Yenidoğan)</button>
+
+        <button data-key="astim" data-category="respiratory" data-tags="nefes,çocuk,ventolin" onclick="showAlgo('astim','Çocuk')">Astım</button>
+        <button data-key="krup" data-category="respiratory" data-tags="stridor,çocuk" onclick="showAlgo('krup','Çocuk')">Krup</button>
+        <button data-key="epiglotit_cocuk" data-category="respiratory" onclick="showAlgo('epiglotit_cocuk','Çocuk')">Epiglotit</button>
+
+        <button data-key="nobet" data-category="neuro" data-tags="nöbet,çocuk" onclick="showAlgo('nobet','Çocuk')">Nöbet</button>
+        <button data-key="kafa" data-category="neuro" data-tags="kafa,çocuk" onclick="showAlgo('kafa','Çocuk')">Kafa Travması</button>
+        <button data-key="vertigo" data-category="neuro" onclick="showAlgo('vertigo','Çocuk')">Vertigo</button>
+
+        <button data-key="ates_cocuk" data-category="other" onclick="showAlgo('ates_cocuk','Çocuk')">Yüksek Ateş</button>
+        <button data-key="septik_sok_cocuk" data-category="other" onclick="showAlgo('septik_sok_cocuk','Çocuk')">🦠 Çocuk Septik Şok</button>
+        <button data-key="p_hipoglisemi" data-category="other" onclick="showAlgo('p_hipoglisemi','Çocuk')">Hipoglisemi</button>
+        <button data-key="anafilaksi" data-category="other" data-tags="alerji,çocuk" onclick="showAlgo('anafilaksi','Çocuk')">Anafilaksi</button>
+        <button data-key="travma" data-category="other" onclick="showAlgo('travma','Çocuk')">Travmalı Hasta</button>
+        <button data-key="yanik" data-category="other" onclick="showAlgo('yanik','Çocuk')">Yanık</button>
+        <button data-key="zehir" data-category="other" onclick="showAlgo('zehir','Çocuk')">Zehirlenme</button>
+        <button data-key="crush" data-category="other" onclick="showAlgo('crush','Çocuk')">Crush Sendromu</button>
+    </div>
+</div>
+
+  <!-- ÇOCUK DOZ -->
+  </div> <div id="cocukDozSection" class="section" style="display:none;">
+  <div style="background:#fff; padding:20px; border-radius:20px; box-shadow:var(--card-shadow);">
+    <h2 style="text-align:center;">👶 Çocuk Doz Hesaplama</h2>
+    <p class="info">Çocuğun kilosunu girerek kritik ilaç dozlarını anlık hesaplayın.</p>
+    <label for="kiloInput" class="visually-hidden">Kilo</label>
+    <div style="margin-bottom:15px; background:#f8fafc; padding:15px; border-radius:12px; border:1px solid #e2e8f0;">
+  <label style="display:block; font-weight:bold; margin-bottom:8px; font-size:14px;">📏 Yaşa Göre Kilo Tahmin Et (Opsiyonel)</label>
+  <div style="display:grid; grid-template-columns: 1fr 1fr; gap:10px;">
+    <select id="yasTipi" style="padding:10px; border-radius:8px; border:1px solid #cbd5e1;">
+      <option value="ay">Ay (0-12)</option>
+      <option value="yil" selected>Yaş (1-15)</option>
+    </select>
+    <input type="number" id="yasDeger" placeholder="Değer gir..." oninput="tahminiKiloHesapla()" style="padding:10px; border-radius:8px; border:1px solid #cbd5e1;">
+  </div>
+</div>
+
+<label style="display:block; font-weight:bold; margin-bottom:8px; font-size:14px;">⚖️ Kesin Kilo (kg)</label>
+<input type="number" id="kiloInput" placeholder="Kilo (kg) giriniz..." oninput="hesaplaCocukDoz()" aria-label="Kilo (kg)" style="width:100%; padding:14px; border-radius:12px; border:1px solid #ddd; font-size:18px; background:#fff7ed;">
+    <div id="dozSonuc" aria-live="polite" style="margin-top:20px;"></div>
+  </div>
+</div>
+
+<div id="content" aria-live="polite" style="display:none;"></div>
+
+<!-- CPR -->
+<div id="ilacTabloSection" class="section" style="display:none;">
+    <div style="background:#fff; padding:15px; border-radius:20px; box-shadow:var(--card-shadow); overflow-x: auto; margin-bottom: 20px;">
+      <h2 style="text-align:center;">💉 Acil İlaç Hazırlama</h2>
+      <table style="width:100%; border-collapse: collapse; font-size: 13px; text-align: left;">
+        <thead>
+          <tr style="background: var(--primary-1); color: white;">
+            <th style="padding: 10px; border: 1px solid #ddd;">İlaç Adı</th>
+            <th style="padding: 10px; border: 1px solid #ddd;">Form / Doz</th>
+            <th style="padding: 10px; border: 1px solid #ddd;">Hazırlanış / Notlar</th>
+          </tr>
+        </thead>
+        <tbody id="ilacTabloGövde">
+          </tbody>
+      </table>
+    </div>
+  </div>
+
+  <div id="cprBox">
+  <h2>🫀 CPR Sayacı</h2>
+  <div id="cprTimer" role="timer" aria-live="polite">02:00</div>
+  <div class="cpr-controls">
+    <button onclick="startCPR()">▶️ Başlat</button>
+    <button onclick="stopCPR()">⏹ Durdur</button>
+    <button onclick="resetCPR()">🔁 Sıfırla</button>
+  </div>
+  <p id="cprAlert" aria-live="assertive"></p>
+
+</div>
+
+<script src="app.js?v=koah-removed-v34" defer></script>
+<script src="ilac-tarayici.js?v=1.0" defer></script>
+
+<!-- Sesli Komut Sistemi -->
+<script>
+// Sesli komut değişkenleri
+let recognition = null;
+let isListening = false;
+
+// Web Speech API desteği kontrolü
+if ('webkitSpeechRecognition' in window || 'SpeechRecognition' in window) {
+  const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+  recognition = new SpeechRecognition();
+  
+  recognition.lang = 'tr-TR';
+  recognition.continuous = false;
+  recognition.interimResults = false;
+  recognition.maxAlternatives = 1;
+  
+  // Sesli komut başladığında
+  recognition.onstart = function() {
+    isListening = true;
+    const voiceBtn = document.getElementById('voiceBtn');
+    voiceBtn.style.background = 'rgba(220, 38, 38, 0.8)';
+    voiceBtn.style.transform = 'scale(1.1)';
+    voiceBtn.innerHTML = '🔴';
+    
+    // Dinleme göstergesi
+    showVoiceIndicator('Dinliyorum...');
+  };
+  
+  // Sesli komut sonuçlandığında
+  recognition.onresult = function(event) {
+    const transcript = event.results[0][0].transcript.toLowerCase().trim();
+    console.log('Algılanan komut:', transcript);
+    
+    processVoiceCommand(transcript);
+  };
+  
+  // Sesli komut bittiğinde
+  recognition.onend = function() {
+    isListening = false;
+    const voiceBtn = document.getElementById('voiceBtn');
+    voiceBtn.style.background = 'rgba(220, 38, 38, 0.15)';
+    voiceBtn.style.transform = 'scale(1)';
+    voiceBtn.innerHTML = '🎤';
+    
+    hideVoiceIndicator();
+  };
+  
+  // Hata durumunda
+  recognition.onerror = function(event) {
+    console.error('Ses tanıma hatası:', event.error, event);
+    isListening = false;
+    const voiceBtn = document.getElementById('voiceBtn');
+    if (voiceBtn) {
+      voiceBtn.style.background = 'rgba(220, 38, 38, 0.15)';
+      voiceBtn.style.transform = 'scale(1)';
+      voiceBtn.innerHTML = '🎤';
+    }
+    
+    let errorMsg = 'Hata oluştu';
+    let showError = true;
+    
+    if (event.error === 'no-speech') {
+      errorMsg = 'Ses algılanamadı. Tekrar deneyin.';
+    } else if (event.error === 'not-allowed' || event.error === 'permission-denied') {
+      errorMsg = 'Mikrofon izni gerekli. Tarayıcı ayarlarından izin verin.';
+    } else if (event.error === 'network') {
+      errorMsg = 'İnternet bağlantısı gerekli';
+    } else if (event.error === 'aborted') {
+      errorMsg = 'Ses tanıma iptal edildi';
+      showError = false; // Normal durum, hata gösterme
+    } else if (event.error === 'audio-capture') {
+      errorMsg = 'Mikrofon erişimi başarısız. Başka uygulama kullanıyor olabilir.';
+    } else if (event.error === 'service-not-allowed') {
+      errorMsg = 'Ses tanıma servisi kullanılamıyor';
+    } else {
+      errorMsg = `Hata: ${event.error}`;
+    }
+    
+    if (showError) {
+      showVoiceIndicator(errorMsg, true);
+      setTimeout(hideVoiceIndicator, 3000);
+    }
+  };
+  
+  // Ses tanıma sonlandığında (mobilde önemli)
+  recognition.onsoundend = function() {
+    console.log('Ses algılama bitti');
+  };
+  
+  recognition.onspeechend = function() {
+    console.log('Konuşma bitti');
+  };
+  
+  recognition.onaudiostart = function() {
+    console.log('Ses kaydı başladı');
+  };
+  
+  recognition.onaudioend = function() {
+    console.log('Ses kaydı bitti');
+  };
+}
+
+// Sesli komutu aç/kapat
+function toggleVoiceCommand() {
+  if (!recognition) {
+    alert('Tarayıcınız sesli komut özelliğini desteklemiyor. Chrome, Safari veya Edge kullanın.');
+    return;
+  }
+  
+  if (isListening) {
+    recognition.stop();
+  } else {
+    try {
+      // Mobil için özel ayarlar
+      recognition.continuous = false;
+      recognition.interimResults = false;
+      recognition.maxAlternatives = 1;
+      
+      // Mobilde daha iyi çalışması için
+      if (/iPhone|iPad|iPod|Android/i.test(navigator.userAgent)) {
+        console.log('Mobil cihaz algılandı, özel ayarlar uygulanıyor');
+        recognition.continuous = false;
+      }
+      
+      recognition.start();
+      console.log('Ses tanıma başlatıldı');
+    } catch (error) {
+      console.error('Ses tanıma başlatma hatası:', error);
+      
+      let errorMsg = 'Ses tanıma başlatılamadı';
+      if (error.message.includes('already started')) {
+        errorMsg = 'Ses tanıma zaten çalışıyor';
+        recognition.stop();
+        setTimeout(() => recognition.start(), 100);
+      } else if (error.message.includes('not-allowed')) {
+        errorMsg = 'Mikrofon izni gerekli. Tarayıcı ayarlarından izin verin.';
+      }
+      
+      showVoiceIndicator(errorMsg, true);
+      setTimeout(hideVoiceIndicator, 3000);
+    }
+  }
+}
+
+// Sesli komutu işle
+function processVoiceCommand(command) {
+  console.log('İşlenen komut:', command);
+  
+  // Komut eşleştirme
+  if (command.includes('yetişkin')) {
+    showVoiceIndicator('Yetişkin menüsü açılıyor...', false);
+    setTimeout(() => {
+      showGroup('yetiskin');
+      hideVoiceIndicator();
+      
+      // Alt komutları kontrol et
+      if (command.includes('arrest') || command.includes('arest')) {
+        setTimeout(() => showAlgo('arrest', 'Yetişkin'), 500);
+      } else if (command.includes('bradikardi')) {
+        setTimeout(() => showAlgo('bradikardi', 'Yetişkin'), 500);
+      } else if (command.includes('taşikardi') || command.includes('tasikardi')) {
+        setTimeout(() => showAlgo('tasikardi', 'Yetişkin'), 500);
+      } else if (command.includes('astım') || command.includes('astim')) {
+        setTimeout(() => showAlgo('astim', 'Yetişkin'), 500);
+      } else if (command.includes('inme')) {
+        setTimeout(() => showAlgo('inme', 'Yetişkin'), 500);
+      } else if (command.includes('nöbet') || command.includes('nobet')) {
+        setTimeout(() => showAlgo('nobet', 'Yetişkin'), 500);
+      }
+    }, 500);
+  } 
+  else if (command.includes('çocuk') || command.includes('cocuk')) {
+    showVoiceIndicator('Çocuk menüsü açılıyor...', false);
+    setTimeout(() => {
+      showGroup('cocuk');
+      hideVoiceIndicator();
+      
+      // Alt komutları kontrol et
+      if (command.includes('arrest') || command.includes('arest')) {
+        setTimeout(() => showAlgo('arrest', 'Çocuk'), 500);
+      } else if (command.includes('bradikardi')) {
+        setTimeout(() => showAlgo('bradikardi', 'Çocuk'), 500);
+      } else if (command.includes('taşikardi') || command.includes('tasikardi')) {
+        setTimeout(() => showAlgo('tasikardi', 'Çocuk'), 500);
+      } else if (command.includes('astım') || command.includes('astim')) {
+        setTimeout(() => showAlgo('astim', 'Çocuk'), 500);
+      } else if (command.includes('nöbet') || command.includes('nobet')) {
+        setTimeout(() => showAlgo('nobet', 'Çocuk'), 500);
+      }
+    }, 500);
+  }
+  else if (command.includes('doz') || command.includes('hesaplama')) {
+    showVoiceIndicator('Doz hesaplama açılıyor...', false);
+    setTimeout(() => {
+      showChildCalc();
+      hideVoiceIndicator();
+    }, 500);
+  }
+  else if (command.includes('ilaç') || command.includes('ilac')) {
+    showVoiceIndicator('İlaç tablosu açılıyor...', false);
+    setTimeout(() => {
+      showGroup('ilaclar');
+      hideVoiceIndicator();
+    }, 500);
+  }
+  else if (command.includes('quiz') || command.includes('kuiz')) {
+    showVoiceIndicator('Quiz açılıyor...', false);
+    setTimeout(() => {
+      showQuizGame();
+      hideVoiceIndicator();
+    }, 500);
+  }
+  else if (command.includes('geri') || command.includes('ana sayfa') || command.includes('anasayfa')) {
+    showVoiceIndicator('Ana sayfaya dönülüyor...', false);
+    setTimeout(() => {
+      location.reload();
+    }, 500);
+  }
+  else if (command.includes('arama') || command.includes('ara')) {
+    showVoiceIndicator('Arama kutusuna odaklanılıyor...', false);
+    setTimeout(() => {
+      document.getElementById('searchInput').focus();
+      hideVoiceIndicator();
+    }, 500);
+  }
+  else if (command.includes('karanlık') || command.includes('karanlik') || command.includes('tema')) {
+    showVoiceIndicator('Tema değiştiriliyor...', false);
+    setTimeout(() => {
+      toggleTheme();
+      hideVoiceIndicator();
+    }, 500);
+  }
+  else {
+    showVoiceIndicator('Komut anlaşılamadı. Tekrar deneyin.', true);
+    setTimeout(hideVoiceIndicator, 2000);
+  }
+}
+
+// Sesli komut göstergesi
+function showVoiceIndicator(message, isError = false) {
+  let indicator = document.getElementById('voiceIndicator');
+  
+  if (!indicator) {
+    indicator = document.createElement('div');
+    indicator.id = 'voiceIndicator';
+    indicator.style.cssText = `
+      position: fixed;
+      top: 80px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: ${isError ? 'rgba(220, 38, 38, 0.95)' : 'rgba(16, 185, 129, 0.95)'};
+      color: white;
+      padding: 12px 24px;
+      border-radius: 50px;
+      font-size: 14px;
+      font-weight: 600;
+      z-index: 10000;
+      box-shadow: 0 8px 24px rgba(0,0,0,0.3);
+      backdrop-filter: blur(10px);
+      animation: slideDown 0.3s ease;
+    `;
+    document.body.appendChild(indicator);
+  }
+  
+  indicator.textContent = message;
+  indicator.style.background = isError ? 'rgba(220, 38, 38, 0.95)' : 'rgba(16, 185, 129, 0.95)';
+  indicator.style.display = 'block';
+}
+
+function hideVoiceIndicator() {
+  const indicator = document.getElementById('voiceIndicator');
+  if (indicator) {
+    indicator.style.animation = 'slideUp 0.3s ease';
+    setTimeout(() => {
+      indicator.style.display = 'none';
+    }, 300);
+  }
+}
+
+// Animasyonlar
+const style = document.createElement('style');
+style.textContent = `
+  @keyframes slideDown {
+    from {
+      opacity: 0;
+      transform: translateX(-50%) translateY(-20px);
+    }
+    to {
+      opacity: 1;
+      transform: translateX(-50%) translateY(0);
+    }
+  }
+  
+  @keyframes slideUp {
+    from {
+      opacity: 1;
+      transform: translateX(-50%) translateY(0);
+    }
+    to {
+      opacity: 0;
+      transform: translateX(-50%) translateY(-20px);
+    }
+  }
+  
+  #voiceBtn:hover {
+    transform: scale(1.1) !important;
+    background: rgba(220, 38, 38, 0.3) !important;
+  }
+  
+  #voiceBtn:active {
+    transform: scale(0.95) !important;
+  }
+  
+  #locationBtn:hover {
+    transform: scale(1.1) !important;
+    background: rgba(16, 185, 129, 0.3) !important;
+  }
+  
+  #locationBtn:active {
+    transform: scale(0.95) !important;
+  }
+  
+  #translateBtn:hover {
+    transform: scale(1.1) !important;
+    background: rgba(59, 130, 246, 0.3) !important;
+  }
+  
+  #translateBtn:active {
+    transform: scale(0.95) !important;
+  }
+`;
+document.head.appendChild(style);
+
+// Klavye kısayolu: Ctrl+M veya Cmd+M ile sesli komutu aç
+document.addEventListener('keydown', function(e) {
+  if ((e.ctrlKey || e.metaKey) && e.key === 'm') {
+    e.preventDefault();
+    toggleVoiceCommand();
+  }
+  // Ctrl+L ile konum bul
+  if ((e.ctrlKey || e.metaKey) && e.key === 'l') {
+    e.preventDefault();
+    getLocation();
+  }
+  // Ctrl+T ile çeviri aç
+  if ((e.ctrlKey || e.metaKey) && e.key === 't') {
+    e.preventDefault();
+    openTranslator();
+  }
+});
+
+// ===== KONUM BULMA SİSTEMİ =====
+let currentLocation = null;
+
+function getLocation() {
+  if (!navigator.geolocation) {
+    showLocationModal('Tarayıcınız konum özelliğini desteklemiyor.', true);
+    return;
+  }
+  
+  // Buton animasyonu
+  const locationBtn = document.getElementById('locationBtn');
+  locationBtn.style.background = 'rgba(16, 185, 129, 0.8)';
+  locationBtn.style.transform = 'scale(1.1)';
+  locationBtn.innerHTML = '🔄';
+  
+  showLocationIndicator('Konum alınıyor...');
+  
+  navigator.geolocation.getCurrentPosition(
+    // Başarılı
+    function(position) {
+      currentLocation = {
+        latitude: position.coords.latitude,
+        longitude: position.coords.longitude,
+        accuracy: position.coords.accuracy,
+        timestamp: new Date(position.timestamp)
+      };
+      
+      // Buton normal haline dön
+      locationBtn.style.background = 'rgba(16, 185, 129, 0.15)';
+      locationBtn.style.transform = 'scale(1)';
+      locationBtn.innerHTML = '📍';
+      
+      hideLocationIndicator();
+      showLocationModal();
+    },
+    // Hata
+    function(error) {
+      locationBtn.style.background = 'rgba(16, 185, 129, 0.15)';
+      locationBtn.style.transform = 'scale(1)';
+      locationBtn.innerHTML = '📍';
+      
+      hideLocationIndicator();
+      
+      let errorMsg = 'Konum alınamadı.';
+      if (error.code === 1) {
+        errorMsg = 'Konum izni reddedildi. Lütfen tarayıcı ayarlarından izin verin.';
+      } else if (error.code === 2) {
+        errorMsg = 'Konum bilgisi alınamadı. GPS açık mı kontrol edin.';
+      } else if (error.code === 3) {
+        errorMsg = 'Konum alma zaman aşımına uğradı. Tekrar deneyin.';
+      }
+      
+      showLocationModal(errorMsg, true);
+    },
+    // Seçenekler
+    {
+      enableHighAccuracy: true,
+      timeout: 10000,
+      maximumAge: 0
+    }
+  );
+}
+
+function showLocationIndicator(message) {
+  let indicator = document.getElementById('locationIndicator');
+  
+  if (!indicator) {
+    indicator = document.createElement('div');
+    indicator.id = 'locationIndicator';
+    indicator.style.cssText = `
+      position: fixed;
+      top: 80px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: rgba(16, 185, 129, 0.95);
+      color: white;
+      padding: 12px 24px;
+      border-radius: 50px;
+      font-size: 14px;
+      font-weight: 600;
+      z-index: 10000;
+      box-shadow: 0 8px 24px rgba(0,0,0,0.3);
+      backdrop-filter: blur(10px);
+      animation: slideDown 0.3s ease;
+    `;
+    document.body.appendChild(indicator);
+  }
+  
+  indicator.textContent = message;
+  indicator.style.display = 'block';
+}
+
+function hideLocationIndicator() {
+  const indicator = document.getElementById('locationIndicator');
+  if (indicator) {
+    indicator.style.animation = 'slideUp 0.3s ease';
+    setTimeout(() => {
+      indicator.style.display = 'none';
+    }, 300);
+  }
+}
+
+function showLocationModal(errorMessage = null, isError = false) {
+  // Modal oluştur
+  let modal = document.getElementById('locationModal');
+  
+  if (!modal) {
+    modal = document.createElement('div');
+    modal.id = 'locationModal';
+    modal.style.cssText = `
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.7);
+      backdrop-filter: blur(5px);
+      z-index: 10001;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      animation: fadeIn 0.3s ease;
+    `;
+    
+    // Boşluğa tıklayınca kapat
+    modal.addEventListener('click', function(e) {
+      if (e.target === modal) {
+        closeLocationModal();
+      }
+    });
+    
+    document.body.appendChild(modal);
+  }
+  
+  if (isError) {
+    modal.innerHTML = `
+      <div onclick="event.stopPropagation()" style="background: var(--card-bg); padding: 30px; border-radius: 20px; max-width: 400px; width: 90%; box-shadow: 0 20px 60px rgba(0,0,0,0.4); animation: scaleIn 0.3s ease;">
+        <div style="text-align: center; margin-bottom: 20px;">
+          <div style="font-size: 60px; margin-bottom: 15px;">❌</div>
+          <h2 style="margin: 0 0 10px 0; color: var(--danger);">Hata</h2>
+          <p style="color: var(--text); margin: 0; font-size: 15px;">${errorMessage}</p>
+        </div>
+        <button onclick="closeLocationModal()" style="width: 100%; padding: 14px; background: var(--danger); color: white; border: none; border-radius: 12px; font-size: 16px; font-weight: 600; cursor: pointer;">
+          Kapat
+        </button>
+      </div>
+    `;
+  } else {
+    const lat = currentLocation.latitude.toFixed(6);
+    const lon = currentLocation.longitude.toFixed(6);
+    const accuracy = Math.round(currentLocation.accuracy);
+    const time = currentLocation.timestamp.toLocaleTimeString('tr-TR');
+    
+    // Google Maps linki
+    const googleMapsLink = `https://www.google.com/maps?q=${lat},${lon}`;
+    
+    // Koordinat metni
+    const coordText = `${lat}, ${lon}`;
+    
+    modal.innerHTML = `
+      <div onclick="event.stopPropagation()" style="background: var(--card-bg); padding: 30px; border-radius: 20px; max-width: 450px; width: 90%; box-shadow: 0 20px 60px rgba(0,0,0,0.4); animation: scaleIn 0.3s ease;">
+        <div style="text-align: center; margin-bottom: 25px;">
+          <div style="font-size: 60px; margin-bottom: 15px;">📍</div>
+          <h2 style="margin: 0 0 10px 0; color: var(--success-1);">Konum Bulundu</h2>
+          <p style="color: var(--muted); margin: 0; font-size: 13px;">Hassasiyet: ±${accuracy} metre • ${time}</p>
+        </div>
+        
+        <div style="background: var(--input-bg); padding: 20px; border-radius: 12px; margin-bottom: 20px; border: 2px solid var(--success-1);">
+          <div style="font-size: 13px; color: var(--muted); margin-bottom: 8px; font-weight: 600;">KOORDİNATLAR</div>
+          <div style="font-size: 18px; font-weight: 700; color: var(--text); font-family: monospace; word-break: break-all; line-height: 1.5;">
+            ${lat}, ${lon}
+          </div>
+          <div style="margin-top: 12px; font-size: 12px; color: var(--muted);">
+            <div>📐 Enlem: ${lat}°</div>
+            <div>📐 Boylam: ${lon}°</div>
+          </div>
+        </div>
+        
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 15px;">
+          <button onclick="copyCoordinates('${coordText}')" style="padding: 12px; background: var(--primary-1); color: white; border: none; border-radius: 12px; font-size: 14px; font-weight: 600; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 6px;">
+            📋 Kopyala
+          </button>
+          <button onclick="shareCoordinates('${coordText}')" style="padding: 12px; background: var(--success-1); color: white; border: none; border-radius: 12px; font-size: 14px; font-weight: 600; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 6px;">
+            📤 Paylaş
+          </button>
+        </div>
+        
+        <button onclick="window.open('${googleMapsLink}', '_blank')" style="width: 100%; padding: 14px; background: linear-gradient(135deg, #4285f4, #34a853); color: white; border: none; border-radius: 12px; font-size: 15px; font-weight: 600; cursor: pointer; margin-bottom: 10px;">
+          🗺️ Google Maps'te Aç
+        </button>
+        
+        <button onclick="closeLocationModal()" style="width: 100%; padding: 12px; background: var(--input-bg); color: var(--text); border: 1px solid var(--muted); border-radius: 12px; font-size: 14px; font-weight: 600; cursor: pointer;">
+          Kapat
+        </button>
+      </div>
+    `;
+  }
+  
+  modal.style.display = 'flex';
+}
+
+function closeLocationModal() {
+  const modal = document.getElementById('locationModal');
+  if (modal) {
+    modal.style.animation = 'fadeOut 0.3s ease';
+    setTimeout(() => {
+      modal.style.display = 'none';
+    }, 300);
+  }
+}
+
+function copyCoordinates(coords) {
+  if (navigator.clipboard) {
+    navigator.clipboard.writeText(coords).then(() => {
+      showLocationIndicator('Koordinatlar kopyalandı! ✅');
+      setTimeout(hideLocationIndicator, 2000);
+    }).catch(() => {
+      fallbackCopy(coords);
+    });
+  } else {
+    fallbackCopy(coords);
+  }
+}
+
+function fallbackCopy(text) {
+  const textarea = document.createElement('textarea');
+  textarea.value = text;
+  textarea.style.position = 'fixed';
+  textarea.style.opacity = '0';
+  document.body.appendChild(textarea);
+  textarea.select();
+  try {
+    document.execCommand('copy');
+    showLocationIndicator('Koordinatlar kopyalandı! ✅');
+    setTimeout(hideLocationIndicator, 2000);
+  } catch (err) {
+    showLocationIndicator('Kopyalama başarısız', true);
+    setTimeout(hideLocationIndicator, 2000);
+  }
+  document.body.removeChild(textarea);
+}
+
+function shareCoordinates(coords) {
+  const shareText = `📍 Konumum: ${coords}\n🗺️ Google Maps: https://www.google.com/maps?q=${coords}`;
+  
+  if (navigator.share) {
+    navigator.share({
+      title: 'Konum Bilgisi',
+      text: shareText
+    }).then(() => {
+      showLocationIndicator('Paylaşıldı! ✅');
+      setTimeout(hideLocationIndicator, 2000);
+    }).catch((err) => {
+      if (err.name !== 'AbortError') {
+        fallbackShare(shareText);
+      }
+    });
+  } else {
+    fallbackShare(shareText);
+  }
+}
+
+function fallbackShare(text) {
+  // SMS ile paylaşma seçeneği
+  const smsLink = `sms:?body=${encodeURIComponent(text)}`;
+  window.location.href = smsLink;
+}
+
+// Animasyon stilleri
+const locationStyle = document.createElement('style');
+locationStyle.textContent = `
+  @keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+  }
+  
+  @keyframes fadeOut {
+    from { opacity: 1; }
+    to { opacity: 0; }
+  }
+  
+  @keyframes scaleIn {
+    from {
+      opacity: 0;
+      transform: scale(0.8);
+    }
+    to {
+      opacity: 1;
+      transform: scale(1);
+    }
+  }
+`;
+document.head.appendChild(locationStyle);
+
+// ===== ACİL DURUM ÇEVİRİ SİSTEMİ =====
+const translationData = {
+  categories: [
+    {
+      id: 'pain',
+      icon: '🤕',
+      name: 'Ağrı ve Şikayetler',
+      phrases: [
+        { tr: 'Nerede ağrınız var?', en: 'Where is your pain?', ar: 'أين ألمك؟', de: 'Wo haben Sie Schmerzen?' },
+        { tr: 'Ne zaman başladı?', en: 'When did it start?', ar: 'متى بدأ؟', de: 'Wann hat es angefangen?' },
+        { tr: 'Ağrı şiddeti 1-10 arası?', en: 'Pain level 1-10?', ar: 'مستوى الألم من 1-10؟', de: 'Schmerzstärke 1-10?' },
+        { tr: 'Göğüs ağrınız var mı?', en: 'Do you have chest pain?', ar: 'هل لديك ألم في الصدر؟', de: 'Haben Sie Brustschmerzen?' },
+        { tr: 'Nefes almakta zorlanıyor musunuz?', en: 'Do you have difficulty breathing?', ar: 'هل تواجه صعوبة في التنفس؟', de: 'Haben Sie Atembeschwerden?' },
+        { tr: 'Baş ağrınız var mı?', en: 'Do you have a headache?', ar: 'هل لديك صداع؟', de: 'Haben Sie Kopfschmerzen?' },
+        { tr: 'Karın ağrınız var mı?', en: 'Do you have abdominal pain?', ar: 'هل لديك ألم في البطن؟', de: 'Haben Sie Bauchschmerzen?' }
+      ]
+    },
+    {
+      id: 'medical',
+      icon: '💊',
+      name: 'Tıbbi Geçmiş',
+      phrases: [
+        { tr: 'Alerjiniz var mı?', en: 'Do you have allergies?', ar: 'هل لديك حساسية؟', de: 'Haben Sie Allergien?' },
+        { tr: 'Hangi ilaçları kullanıyorsunuz?', en: 'What medications do you take?', ar: 'ما هي الأدوية التي تتناولها؟', de: 'Welche Medikamente nehmen Sie?' },
+        { tr: 'Kronik hastalığınız var mı?', en: 'Do you have chronic diseases?', ar: 'هل لديك أمراض مزمنة؟', de: 'Haben Sie chronische Krankheiten?' },
+        { tr: 'Daha önce ameliyat oldunuz mu?', en: 'Have you had surgery before?', ar: 'هل أجريت عملية جراحية من ققبل؟', de: 'Wurden Sie schon operiert?' },
+        { tr: 'Kalp hastalığınız var mı?', en: 'Do you have heart disease?', ar: 'هل لديك مرض قلبي؟', de: 'Haben Sie eine Herzerkrankung?' },
+        { tr: 'Şeker hastalığınız var mı?', en: 'Do you have diabetes?', ar: 'هل لديك مرض السكري؟', de: 'Haben Sie Diabetes?' },
+        { tr: 'Tansiyon hastası mısınız?', en: 'Do you have high blood pressure?', ar: 'هل لديك ضغط دم مرتفع؟', de: 'Haben Sie Bluthochdruck?' }
+      ]
+    },
+    {
+      id: 'emergency',
+      icon: '🚨',
+      name: 'Acil Durum',
+      phrases: [
+        { tr: 'Sakin olun, size yardım edeceğiz', en: 'Stay calm, we will help you', ar: 'ابق هادئاً، سنساعدك', de: 'Bleiben Sie ruhig, wir helfen Ihnen' },
+        { tr: 'Ambulans yolda', en: 'Ambulance is on the way', ar: 'سيارة الإسعاف في الطريق', de: 'Krankenwagen ist unterwegs' },
+        { tr: 'Hastaneye gidiyoruz', en: 'We are going to the hospital', ar: 'نحن ذاهبون إلى المستشفى', de: 'Wir fahren ins Krankenhaus' },
+        { tr: 'Hareket etmeyin', en: 'Do not move', ar: 'لا تتحرك', de: 'Bewegen Sie sich nicht' },
+        { tr: 'Derin nefes alın', en: 'Take a deep breath', ar: 'خذ نفساً عميقاً', de: 'Atmen Sie tief ein' },
+        { tr: 'Ailenizi arayalım mı?', en: 'Should we call your family?', ar: 'هل نتصل بعائلتك؟', de: 'Sollen wir Ihre Familie anrufen?' },
+        { tr: 'Kimlik belgeniz var mı?', en: 'Do you have ID?', ar: 'هل لديك بطاقة هوية؟', de: 'Haben Sie einen Ausweis?' }
+      ]
+    },
+    {
+      id: 'pregnancy',
+      icon: '🤰',
+      name: 'Kadın Sağlığı',
+      phrases: [
+        { tr: 'Hamile misiniz?', en: 'Are you pregnant?', ar: 'هل أنت حامل؟', de: 'Sind Sie schwanger?' },
+        { tr: 'Kaç aylık hamilesiniz?', en: 'How many months pregnant?', ar: 'كم شهراً من الحمل؟', de: 'In welchem Monat sind Sie schwanger?' },
+        { tr: 'Kanama var mı?', en: 'Is there bleeding?', ar: 'هل يوجد نزيف؟', de: 'Gibt es Blutungen?' },
+        { tr: 'Sancılarınız var mı?', en: 'Do you have contractions?', ar: 'هل لديك تقلصات؟', de: 'Haben Sie Wehen?' },
+        { tr: 'Doğum tarihiniz ne zaman?', en: 'When is your due date?', ar: 'متى موعد ولادتك؟', de: 'Wann ist Ihr Geburtstermin?' }
+      ]
+    },
+    {
+      id: 'trauma',
+      icon: '🩹',
+      name: 'Travma',
+      phrases: [
+        { tr: 'Kaza mı geçirdiniz?', en: 'Did you have an accident?', ar: 'هل تعرضت لحادث؟', de: 'Hatten Sie einen Unfall?' },
+        { tr: 'Düştünüz mü?', en: 'Did you fall?', ar: 'هل سقطت؟', de: 'Sind Sie gestürzt?' },
+        { tr: 'Başınızı mı vurdunuz?', en: 'Did you hit your head?', ar: 'هل ضربت رأسك؟', de: 'Haben Sie Ihren Kopf gestoßen?' },
+        { tr: 'Bilincinizi kaybettiniz mi?', en: 'Did you lose consciousness?', ar: 'هل فقدت وعيك؟', de: 'Haben Sie das Bewusstsein verloren?' },
+        { tr: 'Kırık olabilir, hareket etmeyin', en: 'May be broken, do not move', ar: 'قد يكون مكسوراً، لا تتحرك', de: 'Könnte gebrochen sein, nicht bewegen' }
+      ]
+    },
+    {
+      id: 'consent',
+      icon: '✅',
+      name: 'Onay ve Bilgilendirme',
+      phrases: [
+        { tr: 'Tedaviyi kabul ediyor musunuz?', en: 'Do you consent to treatment?', ar: 'هل توافق على العلاج؟', de: 'Stimmen Sie der Behandlung zu?' },
+        { tr: 'İğne yapacağız', en: 'We will give you an injection', ar: 'سنعطيك حقنة', de: 'Wir geben Ihnen eine Spritze' },
+        { tr: 'Serum takacağız', en: 'We will start an IV', ar: 'سنبدأ بالمحلول الوريدي', de: 'Wir legen einen Zugang' },
+        { tr: 'Oksijen vereceğiz', en: 'We will give you oxygen', ar: 'سنعطيك الأكسجين', de: 'Wir geben Ihnen Sauerstoff' },
+        { tr: 'Kan tahlili yapacağız', en: 'We will do a blood test', ar: 'سنجري فحص دم', de: 'Wir machen eine Blutuntersuchung' }
+      ]
+    }
+  ]
+};
+
+let currentLanguage = 'en';
+let speechSynthesis = window.speechSynthesis;
+
+function openTranslator() {
+  showTranslatorModal();
+}
+
+function showTranslatorModal() {
+  let modal = document.getElementById('translatorModal');
+  
+  if (!modal) {
+    modal = document.createElement('div');
+    modal.id = 'translatorModal';
+    modal.style.cssText = `
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.8);
+      backdrop-filter: blur(5px);
+      z-index: 10002;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      animation: fadeIn 0.3s ease;
+      overflow-y: auto;
+      padding: 20px;
+    `;
+    
+    // Boşluğa tıklayınca kapat
+    modal.addEventListener('click', function(e) {
+      if (e.target === modal) {
+        closeTranslatorModal();
+      }
+    });
+    
+    document.body.appendChild(modal);
+  }
+  
+  modal.innerHTML = `
+    <div onclick="event.stopPropagation()" style="background: var(--card-bg); padding: 25px; border-radius: 20px; max-width: 600px; width: 100%; max-height: 90vh; overflow-y: auto; box-shadow: 0 20px 60px rgba(0,0,0,0.5); animation: scaleIn 0.3s ease;">
+      
+      <!-- Header -->
+      <div style="text-align: center; margin-bottom: 25px;">
+        <div style="font-size: 50px; margin-bottom: 10px;">🌍</div>
+        <h2 style="margin: 0 0 8px 0; color: var(--primary-1);">Acil Durum Çevirisi</h2>
+        <p style="color: var(--muted); margin: 0; font-size: 13px;">Offline çalışır • Sesli okuma</p>
+      </div>
+      
+      <!-- Language Selector -->
+      <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-bottom: 25px;">
+        <button onclick="selectLanguage('en')" id="lang-en" style="padding: 12px; background: var(--primary-1); color: white; border: none; border-radius: 12px; font-size: 14px; font-weight: 600; cursor: pointer; display: flex; flex-direction: column; align-items: center; gap: 5px;">
+          <span style="font-size: 24px;">🇬🇧</span>
+          <span>English</span>
+        </button>
+        <button onclick="selectLanguage('ar')" id="lang-ar" style="padding: 12px; background: var(--input-bg); color: var(--text); border: 2px solid var(--muted); border-radius: 12px; font-size: 14px; font-weight: 600; cursor: pointer; display: flex; flex-direction: column; align-items: center; gap: 5px;">
+          <span style="font-size: 24px;">🇸🇦</span>
+          <span>العربية</span>
+        </button>
+        <button onclick="selectLanguage('de')" id="lang-de" style="padding: 12px; background: var(--input-bg); color: var(--text); border: 2px solid var(--muted); border-radius: 12px; font-size: 14px; font-weight: 600; cursor: pointer; display: flex; flex-direction: column; align-items: center; gap: 5px;">
+          <span style="font-size: 24px;">🇩🇪</span>
+          <span>Deutsch</span>
+        </button>
+      </div>
+      
+      <!-- Categories -->
+      <div id="translatorContent"></div>
+      
+      <!-- Close Button -->
+      <button onclick="closeTranslatorModal()" style="width: 100%; padding: 14px; background: var(--input-bg); color: var(--text); border: 1px solid var(--muted); border-radius: 12px; font-size: 15px; font-weight: 600; cursor: pointer; margin-top: 20px;">
+        Kapat
+      </button>
+      
+    </div>
+  `;
+  
+  modal.style.display = 'flex';
+  renderTranslations();
+}
+
+function selectLanguage(lang) {
+  currentLanguage = lang;
+  
+  // Buton stillerini güncelle
+  ['en', 'ar', 'de'].forEach(l => {
+    const btn = document.getElementById(`lang-${l}`);
+    if (btn) {
+      if (l === lang) {
+        btn.style.background = 'var(--primary-1)';
+        btn.style.color = 'white';
+        btn.style.border = 'none';
+      } else {
+        btn.style.background = 'var(--input-bg)';
+        btn.style.color = 'var(--text)';
+        btn.style.border = '2px solid var(--muted)';
+      }
+    }
+  });
+  
+  renderTranslations();
+}
+
+function renderTranslations() {
+  const content = document.getElementById('translatorContent');
+  if (!content) return;
+  
+  let html = '';
+  
+  translationData.categories.forEach(category => {
+    html += `
+      <div style="margin-bottom: 20px;">
+        <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 12px; padding: 10px; background: var(--input-bg); border-radius: 10px;">
+          <span style="font-size: 24px;">${category.icon}</span>
+          <span style="font-weight: 700; color: var(--text); font-size: 15px;">${category.name}</span>
+        </div>
+        <div style="display: flex; flex-direction: column; gap: 8px;">
+    `;
+    
+    category.phrases.forEach((phrase, index) => {
+      const translatedText = phrase[currentLanguage];
+      const categoryId = category.id;
+      const phraseId = `${categoryId}-${index}`;
+      
+      html += `
+        <div style="background: var(--input-bg); padding: 12px 15px; border-radius: 10px; display: flex; justify-content: space-between; align-items: center; border: 1px solid transparent; transition: all 0.2s ease;" onmouseover="this.style.borderColor='var(--primary-1)'" onmouseout="this.style.borderColor='transparent'">
+          <div style="flex: 1;">
+            <div style="font-size: 13px; color: var(--muted); margin-bottom: 4px;">${phrase.tr}</div>
+            <div style="font-size: 16px; font-weight: 600; color: var(--text); ${currentLanguage === 'ar' ? 'direction: rtl; text-align: right;' : ''}">${translatedText}</div>
+          </div>
+          <button onclick="speakPhrase('${translatedText}', '${currentLanguage}')" style="background: var(--primary-1); color: white; border: none; width: 40px; height: 40px; border-radius: 50%; cursor: pointer; font-size: 18px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; margin-left: 10px;">
+            🔊
+          </button>
+        </div>
+      `;
+    });
+    
+    html += `
+        </div>
+      </div>
+    `;
+  });
+  
+  content.innerHTML = html;
+}
+
+function speakPhrase(text, lang) {
+  if (!speechSynthesis) {
+    alert('Tarayıcınız sesli okuma özelliğini desteklemiyor.');
+    return;
+  }
+  
+  // Önceki konuşmayı durdur
+  speechSynthesis.cancel();
+  
+  // Kısa bir gecikme ekle (bazı tarayıcılarda gerekli)
+  setTimeout(() => {
+    const utterance = new SpeechSynthesisUtterance(text);
+    
+    // Dil kodlarını ayarla
+    const langCodes = {
+      'en': 'en-US',
+      'ar': 'ar-SA',
+      'de': 'de-DE'
+    };
+    
+    utterance.lang = langCodes[lang] || 'en-US';
+    
+    // Daha iyi ses kalitesi için ayarlar
+    utterance.rate = 0.85; // Daha yavaş ve anlaşılır
+    utterance.pitch = 1.0; // Normal ton
+    utterance.volume = 1.0; // Maksimum ses
+    
+    // Mevcut sesleri al ve en iyisini seç
+    const voices = speechSynthesis.getVoices();
+    
+    if (voices.length > 0) {
+      let selectedVoice = null;
+      
+      // Dile göre en iyi sesi seç
+      if (lang === 'en') {
+        // İngilizce için kaliteli ses ara
+        selectedVoice = voices.find(voice => 
+          (voice.lang === 'en-US' || voice.lang === 'en-GB') && 
+          (voice.name.includes('Google') || voice.name.includes('Microsoft') || voice.name.includes('Enhanced'))
+        ) || voices.find(voice => voice.lang.startsWith('en'));
+      } else if (lang === 'ar') {
+        // Arapça için özel ses ara
+        selectedVoice = voices.find(voice => 
+          voice.lang.startsWith('ar') && 
+          (voice.name.includes('Google') || voice.name.includes('Microsoft'))
+        ) || voices.find(voice => voice.lang.startsWith('ar'));
+        
+        // Arapça için daha yavaş konuş
+        utterance.rate = 0.75;
+      } else if (lang === 'de') {
+        // Almanca için kaliteli ses ara
+        selectedVoice = voices.find(voice => 
+          voice.lang === 'de-DE' && 
+          (voice.name.includes('Google') || voice.name.includes('Microsoft') || voice.name.includes('Enhanced'))
+        ) || voices.find(voice => voice.lang.startsWith('de'));
+      }
+      
+      if (selectedVoice) {
+        utterance.voice = selectedVoice;
+        console.log('Seçilen ses:', selectedVoice.name, selectedVoice.lang);
+      } else {
+        console.warn('Uygun ses bulunamadı, varsayılan ses kullanılıyor');
+      }
+    }
+    
+    // Görsel geri bildirim
+    showTranslatorIndicator('🔊 Okunuyor...');
+    
+    utterance.onstart = function() {
+      console.log('Sesli okuma başladı:', text);
+    };
+    
+    utterance.onend = function() {
+      console.log('Sesli okuma bitti');
+      hideTranslatorIndicator();
+    };
+    
+    utterance.onerror = function(event) {
+      console.error('Sesli okuma hatası:', event.error);
+      hideTranslatorIndicator();
+      
+      let errorMsg = 'Sesli okuma hatası';
+      if (event.error === 'not-allowed') {
+        errorMsg = 'Sesli okuma izni gerekli';
+      } else if (event.error === 'network') {
+        errorMsg = 'İnternet bağlantısı gerekli';
+      } else if (lang === 'ar') {
+        errorMsg = 'Arapça ses desteği yok. Cihaz ayarlarından Arapça dil paketi indirin.';
+      }
+      
+      showTranslatorIndicator(errorMsg, true);
+      setTimeout(hideTranslatorIndicator, 3000);
+    };
+    
+    // Konuşmayı başlat
+    speechSynthesis.speak(utterance);
+  }, 100);
+}
+
+// Sesleri yükle (sayfa yüklendiğinde)
+if (speechSynthesis) {
+  // Seslerin yüklenmesini bekle
+  speechSynthesis.onvoiceschanged = function() {
+    const voices = speechSynthesis.getVoices();
+    console.log('Mevcut sesler:', voices.length);
+    voices.forEach(voice => {
+      console.log(`- ${voice.name} (${voice.lang})`);
+    });
+  };
+  
+  // İlk yükleme
+  speechSynthesis.getVoices();
+}
+
+function closeTranslatorModal() {
+  const modal = document.getElementById('translatorModal');
+  if (modal) {
+    speechSynthesis.cancel(); // Konuşmayı durdur
+    modal.style.animation = 'fadeOut 0.3s ease';
+    setTimeout(() => {
+      modal.style.display = 'none';
+    }, 300);
+  }
+}
+
+function showTranslatorIndicator(message, isError = false) {
+  let indicator = document.getElementById('translatorIndicator');
+  
+  if (!indicator) {
+    indicator = document.createElement('div');
+    indicator.id = 'translatorIndicator';
+    indicator.style.cssText = `
+      position: fixed;
+      top: 80px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: ${isError ? 'rgba(220, 38, 38, 0.95)' : 'rgba(59, 130, 246, 0.95)'};
+      color: white;
+      padding: 12px 24px;
+      border-radius: 50px;
+      font-size: 14px;
+      font-weight: 600;
+      z-index: 10003;
+      box-shadow: 0 8px 24px rgba(0,0,0,0.3);
+      backdrop-filter: blur(10px);
+      animation: slideDown 0.3s ease;
+    `;
+    document.body.appendChild(indicator);
+  }
+  
+  indicator.textContent = message;
+  indicator.style.background = isError ? 'rgba(220, 38, 38, 0.95)' : 'rgba(59, 130, 246, 0.95)';
+  indicator.style.display = 'block';
+}
+
+function hideTranslatorIndicator() {
+  const indicator = document.getElementById('translatorIndicator');
+  if (indicator) {
+    indicator.style.animation = 'slideUp 0.3s ease';
+    setTimeout(() => {
+      indicator.style.display = 'none';
+    }, 300);
+  }
+}
+</script>
+
+</body>
+</html>
